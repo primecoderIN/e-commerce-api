@@ -1,3 +1,4 @@
-exports.home = (req,res) => {
-    res.status(200).json({success: true,message: "Hello Dost"})
-}
+const BigPromise = require("../middlewares/BigPromise");
+exports.home = BigPromise((req, res) => {
+  res.status(200).json({ success: true, message: "Hello Dost" });
+});
