@@ -21,7 +21,7 @@ exports.signup = BigPromise(async (req, res, next) => {
 
   const emailAlreadyExists = await User.findOne({ email });
   if (emailAlreadyExists) {
-    return next("Email already exists", 400);
+    return next(new CustomError("Email already exists", 400));
   }
   const isFirstAccount = (await User.countDocuments({})) === 0;
   const role = isFirstAccount ? "admin" : "user";
@@ -36,5 +36,28 @@ exports.signup = BigPromise(async (req, res, next) => {
     },
   });
   user.password = undefined; //I do not want to sent password back to user after registration
+  cookieToken({ User: user, res });
+});
+
+exports.login = BigPromise(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(
+      new CustomError("Please provide valid email and password", 400)
+    );
+  }
+  const user = await User.findOne({ email }).select("+password");
+  if (!user) {
+    return next(new CustomError("User does not exist", 400));
+  }
+
+  const isPasswordCorrect = await user.validatePassword(password);
+
+  if (!isPasswordCorrect) {
+    return next(new CustomError("Invalid password", 400));
+  }
+
+  user.password = undefined;
   cookieToken({ User: user, res });
 });
