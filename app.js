@@ -10,6 +10,7 @@ const app = express();
 
 //Routes
 const HomeRoute = require("./routes/home")
+const UserRoute = require("./routes/user")
 
 //for swagger documentation
 const SwaggerDocument = YAML.load("./swagger.yaml")
@@ -25,4 +26,5 @@ app.use(morgan("tiny"))
 
 //using routes 
 app.use("/",HomeRoute)
+app.use("/api/v1", UserRoute);
 module.exports = app;
