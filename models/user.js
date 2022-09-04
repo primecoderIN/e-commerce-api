@@ -31,12 +31,12 @@ const UserSchema = mongoose.Schema({
     secure_url: {
       type: String,
     },
-    forgotPasswordToken: String,
-    forgotPasswordExpiry: Date,
-    createdAt: {
-      type: Date,
-      default: Date.now(),
-    },
+  },
+  forgotPasswordToken: String,
+  forgotPasswordExpiry: Date,
+  createdAt: {
+    type: Date,
+    default: Date.now(),
   },
 });
 //Encrypt password before saving/modifying
