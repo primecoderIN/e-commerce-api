@@ -69,3 +69,57 @@ exports.logout = BigPromise(async (req, res, next) => {
   });
   res.status(200).json({ success: true, message: "Logged out" });
 });
+
+exports.forgotPassword = BigPromise(async (req, res, next) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    return next(new CustomError("User does not exists", 400));
+  }
+  const forgotToken = user.getForgotPasswordToken();
+
+  await user.save({ validateBeforeSave: false });
+
+  const redirectUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/api/v1/password/reset/${forgotToken}`;
+
+  const message = `Copy paste this link in your URL and hit enter \n\n ${redirectUrl}`;
+  //sending email now
+  try {
+    //Send mail here in this part for resetting password
+    res.status(200).json({ success: true, message: "Email sent" });
+  } catch (error) {
+    user.forgotPasswordToken = undefined;
+    user.orgotPasswordExpiry = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(new CustomError(error.message, 500));
+  }
+});
+
+exports.resetPassword = BigPromise(async (req, res, next) => {
+  const token = req.params.token;
+  const forgotPasswordToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+  const user = User.findOne({
+    forgotPasswordToken,
+    forgotPasswordExpiry: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new CustomError("Token is invalid or expired"));
+  }
+
+  if (req.body.password !== req.body.confirmPassword) {
+    return next(new CustomError("Password and confirm password should match"));
+  }
+
+  user.password = req.body.password;
+  user.forgotPasswordToken = undefined;
+  user.orgotPasswordExpiry = undefined;
+  await user.save()
+  res.status(200).json({ success: true, message: "Password reset successful" });
+});
