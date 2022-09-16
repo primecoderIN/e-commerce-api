@@ -3,6 +3,7 @@ const BigPromise = require("../middlewares/BigPromise");
 const CustomError = require("../utils/CustomError");
 const cookieToken = require("../utils/cookieToken");
 const cloudinary = require("cloudinary").v2;
+const crypto = require("crypto");
 
 exports.signup = BigPromise(async (req, res, next) => {
   let result;
@@ -88,7 +89,7 @@ exports.forgotPassword = BigPromise(async (req, res, next) => {
   //sending email now
   try {
     //Send mail here in this part for resetting password
-    res.status(200).json({ success: true, message: "Email sent" });
+    res.status(200).json({ success: true, message: redirectUrl });
   } catch (error) {
     user.forgotPasswordToken = undefined;
     user.orgotPasswordExpiry = undefined;
@@ -104,7 +105,7 @@ exports.resetPassword = BigPromise(async (req, res, next) => {
     .update(token)
     .digest("hex");
 
-  const user = User.findOne({
+  const user = await User.findOne({
     forgotPasswordToken,
     forgotPasswordExpiry: { $gt: Date.now() },
   });
