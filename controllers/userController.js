@@ -135,6 +135,7 @@ exports.getLoggedInUserDetails = BigPromise(async (req, res, next) => {
 
 exports.updateUserPassword = BigPromise(async (req, res, next) => {
   const UserId = req.user.id;
+ 
   const user = await User.findById(UserId).select("+password");
   const isCorrectOldPassword = await user.validatePassword(
     req.body.oldPassword
@@ -144,5 +145,5 @@ exports.updateUserPassword = BigPromise(async (req, res, next) => {
   }
   user.password = req.body.newPassword;
   await user.save();
-  cookieToken(user, res);
+  cookieToken({User: user, res});
 });
