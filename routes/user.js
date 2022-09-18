@@ -10,8 +10,11 @@ const {
   getLoggedInUserDetails,
   updateUserPassword,
   updateUserDetails,
+  adminAllUsers,
+  managerAllUsers
 } = require("../controllers/userController.js");
 const { AuthenticateUser } = require("../middlewares/AuthenticateUser");
+const { AccessRoles} = require("../middlewares/AccessRoles");
 
 router.route("/signup").post(signup);
 router.route("/login").post(login);
@@ -23,5 +26,12 @@ router
   .route("/user/update/password")
   .post(AuthenticateUser, updateUserPassword);
 router.route("/user/update").put(AuthenticateUser, updateUserDetails);
+//Admins can access all users including himself
+router.route("/admin/users").get(AuthenticateUser,AccessRoles("admin"), adminAllUsers);
+//Managers can access all users
+router
+  .route("/manager/users")
+  .get(AuthenticateUser, AccessRoles("manager"), managerAllUsers);
+
 
 module.exports = router;

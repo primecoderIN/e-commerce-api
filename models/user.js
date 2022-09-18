@@ -54,7 +54,7 @@ UserSchema.methods.validatePassword = async function (userPassword) {
 //Create and return JWT token
 UserSchema.methods.getJwtToken = function () {
   const token = JWT.sign(
-    { id: this._id, name: this.name, email: this.email },
+    { id: this._id, name: this.name, email: this.email,role: this.role },
     process.env.JWT_SECRET,
     {
       expiresIn: process.env.JWT_EXPIRY,
