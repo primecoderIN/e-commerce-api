@@ -14,6 +14,7 @@ const {
   managerAllUsers,
   adminGetOneUser,
   adminDeleteOneUser,
+  adminUpdateOneUser,
 } = require("../controllers/userController.js");
 const { AuthenticateUser } = require("../middlewares/AuthenticateUser");
 const { AccessRoles} = require("../middlewares/AccessRoles");
@@ -38,6 +39,7 @@ router
     .route("/admin/user/:id")
     .get(AuthenticateUser, AccessRoles("admin"), adminGetOneUser)
     .delete(AuthenticateUser, AccessRoles("admin"), adminDeleteOneUser)
+    .put(AuthenticateUser, AccessRoles("admin"), adminUpdateOneUser);
 
 
 module.exports = router;

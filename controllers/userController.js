@@ -213,3 +213,18 @@ exports.adminDeleteOneUser = BigPromise(async (req, res, next) => {
   await user.remove();
   res.status(200).json({ success: true });
 });
+
+exports.adminUpdateOneUser = BigPromise(async (req, res, next) => {
+  const newData = {
+    name: req.body.name,
+    email: req.body.email,
+    role: req.body.role
+  };
+  const user = await User.findByIdAndUpdate(req.params.id, newData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  res.status(200).json({ success: true, User: user });
+});
