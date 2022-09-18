@@ -190,7 +190,26 @@ exports.adminAllUsers = BigPromise(async (req, res, next) => {
 
 exports.managerAllUsers = BigPromise(async (req, res, next) => {
   const users = await User.find({ role: "user" });
-  console.log("hoho",users)
-
   res.status(200).json({ success: true, users });
+});
+
+exports.adminGetOneUser = BigPromise(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    return next(new CustomError("user does not exists", 400));
+  }
+  res.status(200).json({ user });
+});
+
+exports.adminDeleteOneUser = BigPromise(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    return next(new CustomError("user does not exists", 400));
+  }
+  //if i delete user first i will have no reference of photo so delete photo first
+  const coludinaryPhotoId = user.photo.id;
+  await cloudinary.uploader.destroy(coludinaryPhotoId);
+
+  await user.remove();
+  res.status(200).json({ success: true });
 });
