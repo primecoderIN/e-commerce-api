@@ -11,6 +11,7 @@ exports.signup = BigPromise(async (req, res, next) => {
   if (!name || !email || !password) {
     return next(new CustomError("All fields are mandatory.", 400));
   }
+ 
   if (req.files) {
     result = await cloudinary.uploader.upload(req.files.photo.tempFilePath, {
       use_filename: true,
@@ -19,6 +20,8 @@ exports.signup = BigPromise(async (req, res, next) => {
       crop: "scale",
     });
   }
+
+   console.log("File received", result);
 
   const emailAlreadyExists = await User.findOne({ email });
   if (emailAlreadyExists) {

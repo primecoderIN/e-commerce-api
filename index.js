@@ -3,6 +3,7 @@ const app = require("./app.js");
 const connectDB = require("./config/connectDB.js");
 const cloudinary = require("cloudinary").v2;
 
+
 //connect to db
 connectDB(process.env.MONGO_URI);
 
