@@ -52,7 +52,7 @@ const ProductSchema = mongoose.Schema({
   reviews: [
     {
       user: {
-        id: mongoose.Schema.ObjectId,
+        id: mongoose.Types.ObjectId,
         ref: "User",
         required: true, //Any time a product is created this is required
       },
@@ -70,7 +70,7 @@ const ProductSchema = mongoose.Schema({
     },
   ],
   user: {
-    type: mongoose.Schema.ObjectId,
+    type: mongoose.Types.ObjectId,
     ref: "User",
     required: true,
   },
