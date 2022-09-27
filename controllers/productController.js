@@ -80,7 +80,8 @@ exports.updateProduct = BigPromise(async (req, res, next) => {
   const updatedProduct = await Product.findByIdAndUpdate(
     req.params.id,
     req.body,{
-      new:true
+      new:true,
+      runValidators: true
     }
   );
   res.status(200).json({ success: true, product: updatedProduct });
