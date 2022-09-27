@@ -36,6 +36,7 @@ class WhereClause {
     );
     let JsonOfCopiedQuery = JSON.parse(stringCopyOfBigQuery);
     this.base = this.base.find(JsonOfCopiedQuery);
+    return this;
   }
 
   pager(resultPerPage) {

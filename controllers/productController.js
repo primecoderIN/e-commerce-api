@@ -31,11 +31,22 @@ exports.AddProduct = BigPromise(async (req, res, next) => {
 exports.getAllProducts = BigPromise(async (req, res, next) => {
   const resultsPerPage = 5;
   const totalProductCount = await Product.countDocuments();
-  let products = new WhereClause(Product.find(), req.query).search().filter();
-  const totalMatchingCount = products.length;
-  products.pager(resultsPerPage);
-  products = await products.base;
+  let productObj = new WhereClause(Product.find(), req.query).search().filter();
+  let products = productObj.base;
+  const totalMatchingCount = products?.length;
+  productObj.pager(resultsPerPage);
+  products = await productObj.base;
   res
     .status(200)
     .json({ success: true, products, totalMatchingCount, totalProductCount });
+});
+
+exports.getSingleProduct = BigPromise(async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return next(new CustomError(`No product found with ${req.params.id}`, 401));
+  }
+
+  res.status(200).json({ success: true, product });
 });
