@@ -57,7 +57,7 @@ exports.updateProduct = BigPromise(async (req, res, next) => {
   if (!product) {
     return next(new CustomError(`No product found with ${req.params.id}`, 401));
   }
-    
+
   if (req.files) {
     let imagesArray = [];
     for (let index = 0; index < product.photos.length; index++) {
@@ -75,14 +75,30 @@ exports.updateProduct = BigPromise(async (req, res, next) => {
         secure_url: result.secure_url,
       });
     }
-      req.body.photos = imagesArray;
+    req.body.photos = imagesArray;
   }
   const updatedProduct = await Product.findByIdAndUpdate(
     req.params.id,
-    req.body,{
-      new:true,
-      runValidators: true
+    req.body,
+    {
+      new: true,
+      runValidators: true,
     }
   );
   res.status(200).json({ success: true, product: updatedProduct });
+});
+
+exports.deleteProduct = BigPromise(async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return next(new CustomError(`No product found with ${req.params.id}`, 401));
+  }
+
+  for (let index = 0; index < product.photos.length; index++) {
+    await cloudinary.uploader.destroy(product.photos[index].id);
+  }
+
+  await Product.findByIdAndDelete(req.params.id);
+  res.status(200).json({ success: true });
 });
