@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const ProductSchema = mongoose.Schema({
+const ProductSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Please provide a product name"],
@@ -33,7 +33,7 @@ const ProductSchema = mongoose.Schema({
     type: String,
     required: [true, "Please select a product category"],
     enum: {
-      values: ["short sleeves", "long-sleeves", "hoodies"],
+      values: ["shortsleeves", "longsleeves", "hoodies"],
       message: "Invalid product category selected",
     },
   },
@@ -52,7 +52,7 @@ const ProductSchema = mongoose.Schema({
   reviews: [
     {
       postedBy: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.ObjectId,
         ref: "User",
         required: true, //Any time a product is created this is required
       },
@@ -67,10 +67,10 @@ const ProductSchema = mongoose.Schema({
       comment: {
         type: String,
       },
-    },
+    }
   ],
-  createdBy: {
-    type: mongoose.Types.ObjectId,
+  user: {
+    type: mongoose.Schema.ObjectId,
     ref: "User",
     required: true,
   },
@@ -80,4 +80,4 @@ const ProductSchema = mongoose.Schema({
   },
 });
 
-module.exports = ProductSchema;
+module.exports = mongoose.model("Products", ProductSchema);

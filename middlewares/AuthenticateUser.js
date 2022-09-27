@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 exports.AuthenticateUser = BigPromise(async (req, res, next) => {
   console.log("from middleware")
   const token =
-    req.cookies.token || req.headers("Authorization").replace("Bearer ", "");
+    req.cookies.token || req?.headers("Authorization").replace("Bearer ", "");
   if (!token) {
     return next(new CustomError("Login first to access this page", 401));
   }
