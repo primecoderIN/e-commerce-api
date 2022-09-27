@@ -50,3 +50,38 @@ exports.getSingleProduct = BigPromise(async (req, res, next) => {
 
   res.status(200).json({ success: true, product });
 });
+
+exports.updateProduct = BigPromise(async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return next(new CustomError(`No product found with ${req.params.id}`, 401));
+  }
+    
+  if (req.files) {
+    let imagesArray = [];
+    for (let index = 0; index < product.photos.length; index++) {
+      await cloudinary.uploader.destroy(product.photos[index].id);
+    }
+    for (let index = 0; index < req.files.photos.length; index++) {
+      let result = await cloudinary.uploader.upload(
+        req.files.photos[index].tempFilePath,
+        {
+          folder: "products",
+        }
+      );
+      imagesArray.push({
+        id: result.public_id,
+        secure_url: result.secure_url,
+      });
+    }
+      req.body.photos = imagesArray;
+  }
+  const updatedProduct = await Product.findByIdAndUpdate(
+    req.params.id,
+    req.body,{
+      new:true
+    }
+  );
+  res.status(200).json({ success: true, product: updatedProduct });
+});
