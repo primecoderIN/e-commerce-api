@@ -4,7 +4,6 @@ const CustomError = require("../utils/CustomError");
 const jwt = require("jsonwebtoken");
 
 exports.AuthenticateUser = BigPromise(async (req, res, next) => {
-  console.log("from middleware")
   const token =
     req.cookies.token || req?.headers("Authorization").replace("Bearer ", "");
   if (!token) {
@@ -12,5 +11,6 @@ exports.AuthenticateUser = BigPromise(async (req, res, next) => {
   }
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   req.user = await User.findById(decoded.id);
+  // console.log("hello",req.user)
   next();
 });

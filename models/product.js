@@ -51,7 +51,7 @@ const ProductSchema = new mongoose.Schema({
   },
   reviews: [
     {
-      postedBy: {
+      user: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
         required: true, //Any time a product is created this is required

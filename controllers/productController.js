@@ -102,3 +102,41 @@ exports.deleteProduct = BigPromise(async (req, res, next) => {
   await Product.findByIdAndDelete(req.params.id);
   res.status(200).json({ success: true });
 });
+
+exports.addReviewToProduct = BigPromise(async (req, res, next) => {
+  const { rating, comment, productID } = req.body;
+
+  const review = {
+    user: req.user._id.toString(),
+    name: req.user.name,
+    rating: Number(rating),
+    comment,
+  };
+
+  const product = await Product.findById(productID);
+
+  const reviewAlreadyExists = product.reviews.find((rev) => {
+    return rev.user.toString() === req.user._id.toString();
+  });
+
+  if (reviewAlreadyExists) {
+    product.reviews.forEach((rev) => {
+      if (rev.user.toString() === req.user._id.toString()) {
+        rev.comment = comment;
+        rev.rating = rating;
+      }
+    });
+  } else {
+    product.reviews.push(review);
+    product.totalReviews = product.reviews.length;
+  }
+
+  product.totalReviews = product.reviews.length;
+  product.rating =
+    product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+    product.reviews.length;
+
+  await product.save({ validateBeforeSave: false });
+
+  res.status(200).json({ success: true });
+});
