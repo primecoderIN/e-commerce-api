@@ -159,3 +159,13 @@ exports.deleteReviewToProduct = BigPromise(async (req, res, next) => {
   await product.save({ validateBeforeSave: false });
   res.status(200).json({ success: true });
 });
+
+exports.getAllReviewsOfProduct = BigPromise(async (req, res, next) => {
+  const product = await Product.findById(req.params.productID);
+
+  if (!product) {
+    return next(new CustomError(`No product found with ${req.params.productID}`, 401));
+  }
+
+  res.status(200).json({ success: true, reviews: product.reviews });
+});
