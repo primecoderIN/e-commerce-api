@@ -9,6 +9,7 @@ const {
   updateProduct,
   deleteProduct,
   addReviewToProduct,
+  deleteReviewToProduct,
 } = require("../controllers/productController");
 
 router
@@ -23,5 +24,8 @@ router
 router
   .route("/products/reviews/add")
   .post(AuthenticateUser, addReviewToProduct);
+router
+  .route("/products/reviews/delete/:productID")
+  .delete(AuthenticateUser, deleteReviewToProduct);
 
 module.exports = router;

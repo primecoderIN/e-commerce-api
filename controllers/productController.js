@@ -140,3 +140,22 @@ exports.addReviewToProduct = BigPromise(async (req, res, next) => {
 
   res.status(200).json({ success: true });
 });
+
+exports.deleteReviewToProduct = BigPromise(async (req, res, next) => {
+  const productID = req.params.productID;
+  const product = await Product.findById(productID);
+  const updatedReviews = product.reviews.filter((rev) => {
+    return rev.user.toString() !== req.user._id.toString();
+  });
+  product.reviews = updatedReviews;
+  product.totalReviews = product.reviews.length;
+  if (product.reviews.length === 0) {
+    product.rating = 0;
+  } else {
+    product.rating =
+      product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+      product.reviews.length;
+  }
+  await product.save({ validateBeforeSave: false });
+  res.status(200).json({ success: true });
+});
